@@ -1162,7 +1162,6 @@ class DataFetcherManager:
         from .tushare_fetcher import TushareFetcher
         from .tickflow_fetcher import TickFlowFetcher
         from .pytdx_fetcher import PytdxFetcher
-        from .baostock_fetcher import BaostockFetcher
         from .yfinance_fetcher import YfinanceFetcher
         from .longbridge_fetcher import LongbridgeFetcher
         config = get_config()
@@ -1171,7 +1170,6 @@ class DataFetcherManager:
         tencent = TencentFetcher()
         akshare = AkshareFetcher()
         pytdx = PytdxFetcher()      # 通达信数据源（可配 PYTDX_HOST/PYTDX_PORT）
-        baostock = BaostockFetcher()
         yfinance = YfinanceFetcher()
         optional_fetchers: List[BaseFetcher] = []
 
@@ -1221,7 +1219,6 @@ class DataFetcherManager:
                 efinance,
                 akshare,
                 pytdx,
-                baostock,
                 yfinance,
                 tencent,
                 *optional_fetchers,
