@@ -15,7 +15,6 @@
 2. EfinanceFetcher (Priority 0) - 同优先级
 3. AkshareFetcher (Priority 1) - 来自 akshare 库
 4. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
 6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
 7. TencentFetcher (Priority 5) - 腾讯直连日 K 最终兜底
 
@@ -24,7 +23,6 @@
 2. AkshareFetcher (Priority 1) - 来自 akshare 库
 3. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
 4. TushareFetcher (Priority 2) - 来自 tushare 库（不可用）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
 6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
 7. TencentFetcher (Priority 5) - 腾讯直连日 K 最终兜底
 8. LongbridgeFetcher (Priority 5) - 长桥 OpenAPI（美股/港股兜底，与 Tencent 市场不重叠）
@@ -38,7 +36,6 @@ from .tencent_fetcher import TencentFetcher
 from .akshare_fetcher import AkshareFetcher, is_hk_stock_code
 from .tushare_fetcher import TushareFetcher
 from .pytdx_fetcher import PytdxFetcher
-from .baostock_fetcher import BaostockFetcher
 from .yfinance_fetcher import YfinanceFetcher
 from .longbridge_fetcher import LongbridgeFetcher
 from .finnhub_fetcher import FinnhubFetcher
@@ -53,7 +50,6 @@ __all__ = [
     'AkshareFetcher',
     'TushareFetcher',
     'PytdxFetcher',
-    'BaostockFetcher',
     'YfinanceFetcher',
     'LongbridgeFetcher',
     'FinnhubFetcher',
