@@ -94,6 +94,18 @@ def _is_us_code(stock_code: str) -> bool:
     code = stock_code.strip().upper()
     return bool(re.match(r'^[A-Z]{1,5}(\.[A-Z])?$', code))
 
+def _is_pytdx_supported_cn_code(stock_code: str) -> bool:
+    """Return whether a code is a mainland China A-share code that Pytdx supports."""
+    raw = stock_code.strip().upper()
+    if not raw:
+        return False
+    if "." in raw:
+        base, suffix = raw.rsplit(".", 1)
+        return suffix in {"SH", "SS", "SZ"} and base.isdigit() and len(base) == 6
+    if raw.startswith(("SH", "SS", "SZ")):
+        raw = raw[2:]
+    return raw.isdigit() and len(raw) == 6 and not is_bse_code(raw)
+
 
 class PytdxFetcher(BaseFetcher):
     """
@@ -319,20 +331,14 @@ class PytdxFetcher(BaseFetcher):
         3. 判断市场代码
         4. 调用 API 获取 K 线数据
         """
-        # 美股不支持，抛出异常让 DataFetcherManager 切换到其他数据源
-        if _is_us_code(stock_code):
-            raise DataFetchError(f"PytdxFetcher 不支持美股 {stock_code}，请使用 AkshareFetcher 或 YfinanceFetcher")
-
-        # 港股不支持，抛出异常让 DataFetcherManager 切换到其他数据源
-        if _is_hk_market(stock_code):
-            raise DataFetchError(f"PytdxFetcher 不支持港股 {stock_code}，请使用 AkshareFetcher")
-
-        # 北交所不支持，抛出异常让 DataFetcherManager 切换到其他数据源
-        if is_bse_code(stock_code):
+        # Pytdx only serves mainland China A-share codes. Skip all other
+        # markets before opening a network connection, so unsupported symbols
+        # cannot cause repeated connection retries.
+        if not _is_pytdx_supported_cn_code(stock_code):
             raise DataFetchError(
-                f"PytdxFetcher 不支持北交所 {stock_code}，将自动切换其他数据源"
+                f"PytdxFetcher 不支持 {stock_code} 所属市场，将自动切换其他数据源"
             )
-        
+
         market, code = self._get_market_code(stock_code)
         
         # 计算需要获取的交易日数量（估算）
@@ -418,8 +424,8 @@ class PytdxFetcher(BaseFetcher):
         Returns:
             股票名称，失败返回 None
         """
-        # 港股不支持（pytdx 不含港股数据）
-        if _is_hk_market(stock_code):
+        # Only mainland China A-share names are available from Pytdx.
+        if not _is_pytdx_supported_cn_code(stock_code):
             return None
 
         # 先检查缓存
@@ -462,10 +468,8 @@ class PytdxFetcher(BaseFetcher):
         Returns:
             实时行情数据字典，失败返回 None
         """
-        if is_bse_code(stock_code):
-            raise DataFetchError(
-                f"PytdxFetcher 不支持北交所 {stock_code}，将自动切换其他数据源"
-            )
+        if not _is_pytdx_supported_cn_code(stock_code):
+            return None
         try:
             market, code = self._get_market_code(stock_code)
             
